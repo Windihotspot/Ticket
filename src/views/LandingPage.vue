@@ -9,6 +9,10 @@
       </div>
     </div>
 
+    <!-- <div>
+      <h1 class="bg-red-500 font-black">HELLO WORLD</h1>
+    </div> -->
+
     <div class="content">
       <!-- Left: details -->
       <div class="details">
@@ -65,23 +69,21 @@
             <p class="tier-desc">{{ tier.description }}</p>
             <p class="tier-price">{{ formatCurrency(tier.price) }}</p>
             <p v-if="tier.soldOut" class="sold-out-label">Sold Out</p>
-            <p v-else-if="tier.remaining <= 20" class="low-stock">
-              Only {{ tier.remaining }} left
-            </p>
+            <p v-else-if="tier.remaining <= 20" class="low-stock">Only {{ tier.remaining }} left</p>
           </div>
 
           <div class="qty-control" v-if="!tier.soldOut">
-            <button
-              class="qty-btn"
-              :disabled="getQty(tier.id) === 0"
-              @click="decrement(tier.id)"
-            >−</button>
+            <button class="qty-btn" :disabled="getQty(tier.id) === 0" @click="decrement(tier.id)">
+              −
+            </button>
             <span class="qty-value">{{ getQty(tier.id) }}</span>
             <button
               class="qty-btn"
               :disabled="getQty(tier.id) >= tier.maxPerOrder"
               @click="increment(tier.id)"
-            >+</button>
+            >
+              +
+            </button>
           </div>
         </div>
 
@@ -101,113 +103,41 @@
         </div>
 
         <button
-          class="checkout-btn"
+          type="button"
           :disabled="totalTickets === 0"
-          @click="openCheckout"
+          class="mt-5 w-full rounded-xl bg-[#ff5a5f] px-4 py-3 font-bold text-white transition hover:bg-[#e94b50] disabled:cursor-not-allowed disabled:bg-gray-300"
+          @click="goToCheckout"
         >
           {{ totalTickets === 0 ? 'Select a ticket' : 'Get Tickets' }}
         </button>
       </div>
     </div>
 
-    <!-- Checkout Modal -->
-    <transition name="fade">
-      <div v-if="showCheckout" class="modal-backdrop" @click.self="closeCheckout">
-        <div class="modal">
-          <button class="modal-close" @click="closeCheckout">✕</button>
-
-          <!-- Step 1: attendee info -->
-          <div v-if="checkoutStep === 'details'">
-            <h3>Your Details</h3>
-            <div class="form-group">
-              <label>Full Name</label>
-              <input v-model="attendee.name" type="text" placeholder="Jane Doe" />
-            </div>
-            <div class="form-group">
-              <label>Email</label>
-              <input v-model="attendee.email" type="email" placeholder="jane@example.com" />
-            </div>
-            <div class="form-group">
-              <label>Phone</label>
-              <input v-model="attendee.phone" type="tel" placeholder="+234 800 000 0000" />
-            </div>
-
-            <div class="order-mini-summary">
-              <div v-for="line in orderLines" :key="line.id" class="summary-row">
-                <span>{{ line.qty }} × {{ line.name }}</span>
-                <span>{{ formatCurrency(line.qty * line.price) }}</span>
-              </div>
-              <div class="summary-row total">
-                <span>Total</span>
-                <span>{{ formatCurrency(total) }}</span>
-              </div>
-            </div>
-
-            <button
-              class="checkout-btn"
-              :disabled="!isAttendeeValid"
-              @click="goToPayment"
-            >
-              Continue to Payment
-            </button>
-          </div>
-
-          <!-- Step 2: payment widget (simulated) -->
-          <div v-else-if="checkoutStep === 'payment'">
-            <h3>Payment</h3>
-            <p class="sub">Pay {{ formatCurrency(total) }} securely</p>
-
-            <div class="payment-methods">
-              <button
-                v-for="method in paymentMethods"
-                :key="method.id"
-                class="payment-method"
-                :class="{ active: selectedMethod === method.id }"
-                @click="selectedMethod = method.id"
-              >
-                <span>{{ method.icon }}</span>
-                {{ method.label }}
-              </button>
-            </div>
-
-            <button class="checkout-btn" @click="launchPaymentWidget">
-              Pay {{ formatCurrency(total) }}
-            </button>
-            <button class="link-btn" @click="checkoutStep = 'details'">
-              Back
-            </button>
-          </div>
-
-          <!-- Step 3: simulated widget processing -->
-          <div v-else-if="checkoutStep === 'processing'" class="processing">
-            <div class="spinner"></div>
-            <p>Processing your payment…</p>
-            <p class="sub">Do not close this window</p>
-          </div>
-
-          <!-- Step 4: success -->
-          <div v-else-if="checkoutStep === 'success'" class="success">
-            <div class="success-icon">✓</div>
-            <h3>Payment Successful!</h3>
-            <p class="sub">
-              Your {{ totalTickets }} ticket(s) have been sent to
-              {{ attendee.email }}
-            </p>
-            <p class="order-ref">Order ref: {{ orderRef }}</p>
-            <button class="checkout-btn" @click="closeCheckout">Done</button>
-          </div>
-        </div>
-      </div>
-    </transition>
+    
   </div>
 </template>
 
 <script setup>
 import { ref, reactive, computed } from 'vue'
+import { useRouter } from 'vue-router'
 
 // ---------------------------------------------------------------------------
 // Dummy event data — swap this out for real API data
 // ---------------------------------------------------------------------------
+
+const router = useRouter()
+
+function goToCheckout() {
+  if (totalTickets.value === 0) return
+
+  router.push({
+    name: 'checkout',
+    query: {
+      tickets: JSON.stringify(orderLines.value)
+    }
+  })
+}
+
 const event = reactive({
   title: 'Amber Skies Music Festival',
   category: 'Music Festival',
@@ -222,8 +152,8 @@ const event = reactive({
   organiser: {
     name: 'Skyline Live Events',
     logo: 'https://api.dicebear.com/7.x/shapes/svg?seed=skyline',
-    eventsHosted: 34,
-  },
+    eventsHosted: 34
+  }
 })
 
 const ticketTiers = reactive([
@@ -234,7 +164,7 @@ const ticketTiers = reactive([
     price: 15000,
     remaining: 400,
     maxPerOrder: 6,
-    soldOut: false,
+    soldOut: false
   },
   {
     id: 'vip',
@@ -243,7 +173,7 @@ const ticketTiers = reactive([
     price: 45000,
     remaining: 18,
     maxPerOrder: 4,
-    soldOut: false,
+    soldOut: false
   },
   {
     id: 'vvip',
@@ -252,8 +182,8 @@ const ticketTiers = reactive([
     price: 180000,
     remaining: 0,
     maxPerOrder: 2,
-    soldOut: true,
-  },
+    soldOut: true
+  }
 ])
 
 // ---------------------------------------------------------------------------
@@ -278,9 +208,7 @@ function decrement(tierId) {
   }
 }
 
-const totalTickets = computed(() =>
-  Object.values(quantities.value).reduce((sum, q) => sum + q, 0)
-)
+const totalTickets = computed(() => Object.values(quantities.value).reduce((sum, q) => sum + q, 0))
 
 const orderLines = computed(() =>
   ticketTiers
@@ -288,9 +216,7 @@ const orderLines = computed(() =>
     .map((t) => ({ id: t.id, name: t.name, qty: getQty(t.id), price: t.price }))
 )
 
-const subtotal = computed(() =>
-  orderLines.value.reduce((sum, l) => sum + l.qty * l.price, 0)
-)
+const subtotal = computed(() => orderLines.value.reduce((sum, l) => sum + l.qty * l.price, 0))
 const serviceFee = computed(() => Math.round(subtotal.value * 0.05))
 const total = computed(() => subtotal.value + serviceFee.value)
 
@@ -298,15 +224,15 @@ function formatCurrency(amount) {
   return new Intl.NumberFormat('en-NG', {
     style: 'currency',
     currency: 'NGN',
-    maximumFractionDigits: 0,
+    maximumFractionDigits: 0
   }).format(amount)
 }
 
 // ---------------------------------------------------------------------------
 // Checkout flow (simulated — no real payment provider wired up)
 // ---------------------------------------------------------------------------
-const showCheckout = ref(false)
-const checkoutStep = ref('details') // details -> payment -> processing -> success
+// const showCheckout = ref(false)
+// const checkoutStep = ref('details') // details -> payment -> processing -> success
 const attendee = reactive({ name: '', email: '', phone: '' })
 const selectedMethod = ref('card')
 const orderRef = ref('')
@@ -314,7 +240,7 @@ const orderRef = ref('')
 const paymentMethods = [
   { id: 'card', label: 'Debit/Credit Card', icon: '💳' },
   { id: 'transfer', label: 'Bank Transfer', icon: '🏦' },
-  { id: 'ussd', label: 'USSD', icon: '📱' },
+  { id: 'ussd', label: 'USSD', icon: '📱' }
 ]
 
 const isAttendeeValid = computed(
@@ -324,32 +250,33 @@ const isAttendeeValid = computed(
     attendee.phone.trim().length >= 7
 )
 
-function openCheckout() {
-  checkoutStep.value = 'details'
-  showCheckout.value = true
-}
-function closeCheckout() {
-  showCheckout.value = false
-  checkoutStep.value = 'details'
-}
-function goToPayment() {
-  if (!isAttendeeValid.value) return
-  checkoutStep.value = 'payment'
-}
+// function openCheckout() {
+//   console.log('Opening checkout modal')
+//   checkoutStep.value = 'details'
+//   showCheckout.value = true
+// }
+// function closeCheckout() {
+//   showCheckout.value = false
+//   checkoutStep.value = 'details'
+// }
+// function goToPayment() {
+//   if (!isAttendeeValid.value) return
+//   checkoutStep.value = 'payment'
+// }
 
-// Simulates handing off to a payment widget (e.g. Paystack/Flutterwave/Stripe)
-function launchPaymentWidget() {
-  checkoutStep.value = 'processing'
+// // Simulates handing off to a payment widget (e.g. Paystack/Flutterwave/Stripe)
+// function launchPaymentWidget() {
+//   checkoutStep.value = 'processing'
 
-  // Simulate network/payment provider latency
-  setTimeout(() => {
-    orderRef.value = 'TX-' + Math.random().toString(36).slice(2, 9).toUpperCase()
-    checkoutStep.value = 'success'
+//   // Simulate network/payment provider latency
+//   setTimeout(() => {
+//     orderRef.value = 'TX-' + Math.random().toString(36).slice(2, 9).toUpperCase()
+//     checkoutStep.value = 'success'
 
-    // Reset ticket quantities after a successful "purchase"
-    quantities.value = {}
-  }, 2200)
-}
+//     // Reset ticket quantities after a successful "purchase"
+//     quantities.value = {}
+//   }, 2200)
+// }
 </script>
 
 <style scoped>
@@ -574,14 +501,14 @@ function launchPaymentWidget() {
 }
 
 /* Modal */
-.modal-backdrop {
+/* .modal-backdrop {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 50;
+  z-index: 9999;
   padding: 1rem;
 }
 .modal {
@@ -705,5 +632,5 @@ function launchPaymentWidget() {
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
-}
+} */
 </style>
