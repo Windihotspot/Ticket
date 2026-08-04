@@ -2,6 +2,8 @@ import { createRouter, createWebHistory } from 'vue-router'
 import LandingPage from '../views/LandingPage.vue'
 import CheckoutPage from '@/views/CheckoutPage.vue'
 import PaymentPage from '@/views/PaymentPage.vue'
+import TicketDemo from '@/components/TicketDemo.vue'
+// import TicketDemo from '@/components/TicketDemo.vue'
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
   routes: [
@@ -19,6 +21,11 @@ const router = createRouter({
       path: '/payment',
       name: 'payment',
       component: PaymentPage
+    },
+    {
+      path: '/ticketdemo',
+      name: 'ticketdemo',
+      component: TicketDemo
     },
   ]
 })
