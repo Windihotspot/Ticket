@@ -127,7 +127,7 @@ function processPayment() {
 }
 
 function goHome() {
-  router.push('/')
+  router.push('/ticketdemo')
 }
 
 // function selectMethod(id) {
@@ -560,7 +560,7 @@ function goHome() {
               class="mx-auto mt-8 block rounded-xl bg-[#ff5a5f] px-8 py-3 font-bold text-white transition hover:bg-[#e94b50]"
               @click="goHome"
             >
-              Done
+              view ticket
             </button>
           </div>
         </section>
