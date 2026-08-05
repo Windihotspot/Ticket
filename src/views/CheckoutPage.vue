@@ -20,11 +20,7 @@ const orderRef = ref('')
 const paymentMethods = [
   {
     id: 'card',
-<<<<<<< HEAD
     label: 'Pay with Card',
-=======
-    label: 'Debit/Credit Card',
->>>>>>> Dimeji/dev
     icon: '💳'
   },
   {
@@ -39,7 +35,6 @@ const paymentMethods = [
   }
 ]
 
-<<<<<<< HEAD
 const paymentView = ref('methods')
 
 function selectMethod(methodId) {
@@ -67,6 +62,7 @@ const cardDetails = ref({
   cvv: ''
 })
 
+
 const isCardValid = computed(() => {
   return (
     cardDetails.value.number.trim() !== '' &&
@@ -76,8 +72,6 @@ const isCardValid = computed(() => {
   )
 })
 
-=======
->>>>>>> Dimeji/dev
 const tickets = computed(() => {
   try {
     return JSON.parse(route.query.tickets || '[]')
@@ -133,7 +127,6 @@ function processPayment() {
 }
 
 function goHome() {
-<<<<<<< HEAD
   router.push('/')
 }
 
@@ -141,10 +134,6 @@ function goHome() {
 //   selectedMethod.value = id
 //   if (id === 'transfer') startTransferTimer()
 // }
-=======
-  router.push('/ticketdemo')
-}
->>>>>>> Dimeji/dev
 </script>
 
 <template>
@@ -260,10 +249,7 @@ function goHome() {
           </div>
 
           <!-- Payment section -->
-<<<<<<< HEAD
           <!-- Payment section -->
-=======
->>>>>>> Dimeji/dev
           <div v-else-if="checkoutStep === 'payment'">
             <div class="mb-6">
               <h2 class="text-2xl font-bold text-gray-900">Payment</h2>
@@ -271,28 +257,14 @@ function goHome() {
               <p class="mt-1 text-sm text-gray-500">Select your preferred payment method.</p>
             </div>
 
-<<<<<<< HEAD
             <!-- Show all payment options first -->
             <div v-if="paymentView === 'methods'" class="space-y-3">
-=======
-            <div class="space-y-3">
->>>>>>> Dimeji/dev
               <button
                 v-for="method in paymentMethods"
                 :key="method.id"
                 type="button"
-<<<<<<< HEAD
                 class="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-gray-300"
                 @click="selectMethod(method.id)"
-=======
-                class="flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
-                :class="
-                  selectedMethod === method.id
-                    ? 'border-[#ff5a5f] bg-red-50 ring-2 ring-[#ff5a5f]/10'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                "
-                @click="selectedMethod = method.id"
->>>>>>> Dimeji/dev
               >
                 <span class="text-2xl">
                   {{ method.icon }}
@@ -303,7 +275,6 @@ function goHome() {
                 </span>
 
                 <span
-<<<<<<< HEAD
                   class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border border-gray-300"
                 ></span>
               </button>
@@ -442,42 +413,6 @@ function goHome() {
               v-else-if="paymentView === 'transfer'"
               class="mt-7 overflow-hidden rounded-xl border border-[#d7e3e7]"
             >
-=======
-                  class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border"
-                  :class="
-                    selectedMethod === method.id
-                      ? 'border-[#ff5a5f] bg-[#ff5a5f]'
-                      : 'border-gray-300'
-                  "
-                >
-                  <span
-                    v-if="selectedMethod === method.id"
-                    class="h-2 w-2 rounded-full bg-white"
-                  ></span>
-                </span>
-              </button>
-            </div>
-
-            <!-- <button
-              type="button"
-              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
-              @click="processPayment"
-            >
-              Pay {{ formatCurrency(total) }}
-            </button> -->
-
-            <!--Payment Section per id-->
-            <button
-              v-if="selectedMethod !== 'transfer'"
-              type="button"
-              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
-              @click="processPayment"
-            >
-              Pay {{ formatCurrency(total) }}
-            </button>
-
-            <div v-else class="mt-7 overflow-hidden rounded-xl border border-[#d7e3e7]">
->>>>>>> Dimeji/dev
               <!-- Amount -->
               <div class="bg-[#e8f2f4] px-6 py-6 text-center">
                 <p class="text-sm font-medium text-gray-500">Amount to Send</p>
@@ -530,19 +465,11 @@ function goHome() {
                     {{ formattedTime }}
                   </span>
 
-<<<<<<< HEAD
                   Make your payment before it expires.
                 </p>
               </div>
 
               <!-- Confirmation -->
-=======
-                  make your payment before it expires
-                </p>
-              </div>
-
-              <!-- Confirmation button -->
->>>>>>> Dimeji/dev
               <div class="bg-white px-4 pb-5">
                 <button
                   type="button"
@@ -554,7 +481,6 @@ function goHome() {
               </div>
             </div>
 
-<<<<<<< HEAD
             <!-- USSD child -->
             <div
               v-else-if="paymentView === 'ussd'"
@@ -590,23 +516,13 @@ function goHome() {
               type="button"
               class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
               @click="backToDetails"
-=======
-            <button
-              type="button"
-              class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
-              @click="checkoutStep = 'details'"
->>>>>>> Dimeji/dev
             >
               Back to details
             </button>
           </div>
 
           <!-- Processing -->
-<<<<<<< HEAD
           <!-- <div v-else-if="checkoutStep === 'processing'" class="py-20 text-center">
-=======
-          <div v-else-if="checkoutStep === 'processing'" class="py-20 text-center">
->>>>>>> Dimeji/dev
             <div
               class="mx-auto h-14 w-14 animate-spin rounded-full border-4 border-gray-200 border-t-[#ff5a5f]"
             ></div>
@@ -614,17 +530,10 @@ function goHome() {
             <h2 class="mt-7 text-xl font-bold text-gray-900">Processing payment</h2>
 
             <p class="mt-2 text-sm text-gray-500">Please do not close this page.</p>
-<<<<<<< HEAD
           </div> -->
 
           <!-- Success -->
           <!-- <div v-else-if="checkoutStep === 'success'" class="py-12 text-center">
-=======
-          </div>
-
-          <!-- Success -->
-          <div v-else-if="checkoutStep === 'success'" class="py-12 text-center">
->>>>>>> Dimeji/dev
             <div
               class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl font-bold text-green-600"
             >
@@ -651,15 +560,9 @@ function goHome() {
               class="mx-auto mt-8 block rounded-xl bg-[#ff5a5f] px-8 py-3 font-bold text-white transition hover:bg-[#e94b50]"
               @click="goHome"
             >
-<<<<<<< HEAD
               Done
             </button>
           </div> -->
-=======
-              view Ticket
-            </button>
-          </div>
->>>>>>> Dimeji/dev
         </section>
 
         <!-- Order summary -->
