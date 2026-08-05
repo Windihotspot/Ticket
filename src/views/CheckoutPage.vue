@@ -20,7 +20,7 @@ const orderRef = ref('')
 const paymentMethods = [
   {
     id: 'card',
-    label: 'Debit/Credit Card',
+    label: 'Pay with Card',
     icon: '💳'
   },
   {
@@ -34,6 +34,42 @@ const paymentMethods = [
     icon: '📱'
   }
 ]
+
+const paymentView = ref('methods')
+
+function selectMethod(methodId) {
+  selectedMethod.value = methodId
+  paymentView.value = methodId
+}
+
+function showPaymentMethods() {
+  paymentView.value = 'methods'
+  selectedMethod.value = ''
+}
+
+function backToDetails() {
+  checkoutStep.value = 'details'
+  paymentView.value = 'methods'
+  selectedMethod.value = ''
+}
+
+
+
+const cardDetails = ref({
+  number: '',
+  name: '',
+  expiry: '',
+  cvv: ''
+})
+
+const isCardValid = computed(() => {
+  return (
+    cardDetails.value.number.trim() !== '' &&
+    cardDetails.value.name.trim() !== '' &&
+    cardDetails.value.expiry.trim() !== '' &&
+    cardDetails.value.cvv.trim() !== ''
+  )
+})
 
 const tickets = computed(() => {
   try {
@@ -93,10 +129,10 @@ function goHome() {
   router.push('/')
 }
 
-function selectMethod(id) {
-  selectedMethod.value = id
-  if (id === 'transfer') startTransferTimer()
-}
+// function selectMethod(id) {
+//   selectedMethod.value = id
+//   if (id === 'transfer') startTransferTimer()
+// }
 </script>
 
 <template>
@@ -212,6 +248,7 @@ function selectMethod(id) {
           </div>
 
           <!-- Payment section -->
+          <!-- Payment section -->
           <div v-else-if="checkoutStep === 'payment'">
             <div class="mb-6">
               <h2 class="text-2xl font-bold text-gray-900">Payment</h2>
@@ -219,18 +256,14 @@ function selectMethod(id) {
               <p class="mt-1 text-sm text-gray-500">Select your preferred payment method.</p>
             </div>
 
-            <!-- <div class="space-y-3">
+            <!-- Show all payment options first -->
+            <div v-if="paymentView === 'methods'" class="space-y-3">
               <button
                 v-for="method in paymentMethods"
                 :key="method.id"
                 type="button"
-                class="flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
-                :class="
-                  selectedMethod === method.id
-                    ? 'border-[#ff5a5f] bg-red-50 ring-2 ring-[#ff5a5f]/10'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                "
-                @click="selectedMethod = method.id"
+                class="flex w-full items-center gap-4 rounded-xl border border-gray-200 bg-white p-4 text-left transition hover:border-gray-300"
+                @click="selectMethod(method.id)"
               >
                 <span class="text-2xl">
                   {{ method.icon }}
@@ -241,72 +274,153 @@ function selectMethod(id) {
                 </span>
 
                 <span
-                  class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border"
-                  :class="
-                    selectedMethod === method.id
-                      ? 'border-[#ff5a5f] bg-[#ff5a5f]'
-                      : 'border-gray-300'
-                  "
-                >
-                  <span
-                    v-if="selectedMethod === method.id"
-                    class="h-2 w-2 rounded-full bg-white"
-                  ></span>
-                </span>
-              </button>
-            </div> -->
-
-            <div class="space-y-3">
-              <button
-                v-for="method in paymentMethods"
-                :key="method.id"
-                type="button"
-                class="flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
-                :class="
-                  selectedMethod === method.id
-                    ? 'border-[#ff5a5f] bg-red-50 ring-2 ring-[#ff5a5f]/10'
-                    : 'border-gray-200 bg-white hover:border-gray-300'
-                "
-                @click="selectMethod(method.id)"
-              >
-                <span class="text-2xl">{{ method.icon }}</span>
-                <span class="font-semibold text-gray-800">{{ method.label }}</span>
-                <span
-                  class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border"
-                  :class="
-                    selectedMethod === method.id
-                      ? 'border-[#ff5a5f] bg-[#ff5a5f]'
-                      : 'border-gray-300'
-                  "
-                >
-                  <span
-                    v-if="selectedMethod === method.id"
-                    class="h-2 w-2 rounded-full bg-white"
-                  ></span>
-                </span>
+                  class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border border-gray-300"
+                ></span>
               </button>
             </div>
 
-            <!-- Card -->
-            <div v-if="selectedMethod === 'card'" class="mt-7">
+            <!-- Card child -->
+            <div v-else-if="paymentView === 'card'" class="mt-7">
+              <div class="rounded-xl border border-gray-200 bg-white p-5">
+                <!-- Header -->
+                <div class="mb-6">
+                  <h3 class="text-lg font-bold text-gray-900">Card payment</h3>
+
+                  <p class="mt-1 text-sm text-gray-500">
+                    Enter your card details to complete your payment securely.
+                  </p>
+                </div>
+
+                <!-- Supported cards -->
+                <div class="mb-6">
+                  <p class="mb-3 text-sm font-semibold text-gray-700">Accepted cards</p>
+
+                  <div class="flex flex-wrap items-center gap-3">
+                    <!-- Visa -->
+                    <div
+                      class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-bold text-blue-700"
+                    >
+                      VISA
+                    </div>
+
+                    <!-- Mastercard -->
+                    <div
+                      class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-bold text-red-600"
+                    >
+                      Mastercard
+                    </div>
+
+                    <!-- Verve -->
+                    <div
+                      class="rounded-lg border border-gray-200 bg-gray-50 px-4 py-2 text-sm font-bold text-green-700"
+                    >
+                      VERVE
+                    </div>
+                  </div>
+                </div>
+
+                <!-- Card number -->
+                <div class="mb-5">
+                  <label for="card-number" class="mb-2 block text-sm font-semibold text-gray-700">
+                    Card number
+                  </label>
+
+                  <input
+                    id="card-number"
+                    v-model="cardDetails.number"
+                    type="text"
+                    inputmode="numeric"
+                    placeholder="1234 5678 9012 3456"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#ff5a5f] focus:ring-4 focus:ring-[#ff5a5f]/10"
+                  />
+                </div>
+
+                <!-- Cardholder name -->
+                <div class="mb-5">
+                  <label for="card-name" class="mb-2 block text-sm font-semibold text-gray-700">
+                    Cardholder name
+                  </label>
+
+                  <input
+                    id="card-name"
+                    v-model="cardDetails.name"
+                    type="text"
+                    placeholder="JOHN DOE"
+                    class="w-full rounded-xl border border-gray-300 px-4 py-3 uppercase text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#ff5a5f] focus:ring-4 focus:ring-[#ff5a5f]/10"
+                  />
+                </div>
+
+                <!-- Expiry date and CVV -->
+                <div class="grid grid-cols-2 gap-4">
+                  <!-- Expiry date -->
+                  <div>
+                    <label for="expiry-date" class="mb-2 block text-sm font-semibold text-gray-700">
+                      Expiry date
+                    </label>
+
+                    <input
+                      id="expiry-date"
+                      v-model="cardDetails.expiry"
+                      type="text"
+                      inputmode="numeric"
+                      placeholder="MM/YY"
+                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#ff5a5f] focus:ring-4 focus:ring-[#ff5a5f]/10"
+                    />
+                  </div>
+
+                  <!-- CVV -->
+                  <div>
+                    <label for="card-cvv" class="mb-2 block text-sm font-semibold text-gray-700">
+                      CVV
+                    </label>
+
+                    <input
+                      id="card-cvv"
+                      v-model="cardDetails.cvv"
+                      type="password"
+                      inputmode="numeric"
+                      maxlength="4"
+                      placeholder="123"
+                      class="w-full rounded-xl border border-gray-300 px-4 py-3 text-gray-900 outline-none transition placeholder:text-gray-400 focus:border-[#ff5a5f] focus:ring-4 focus:ring-[#ff5a5f]/10"
+                    />
+                  </div>
+                </div>
+
+                <!-- Security text -->
+                <div class="mt-5 flex items-center gap-2 rounded-lg bg-gray-50 px-4 py-3">
+                  <span>🔒</span>
+
+                  <p class="text-xs leading-5 text-gray-500">
+                    Your card information is encrypted and securely processed.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Pay button -->
               <button
                 type="button"
-                class="w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
+                class="mt-5 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50] disabled:cursor-not-allowed disabled:bg-gray-300"
+                :disabled="!isCardValid"
                 @click="processPayment"
               >
                 Pay {{ formatCurrency(total) }}
               </button>
             </div>
 
-            <!-- Bank transfer -->
+            <!-- Bank transfer child -->
             <div
-              v-else-if="selectedMethod === 'transfer'"
+              v-else-if="paymentView === 'transfer'"
               class="mt-7 overflow-hidden rounded-xl border border-[#d7e3e7]"
             >
+              <!-- Amount -->
               <div class="bg-[#e8f2f4] px-6 py-6 text-center">
                 <p class="text-sm font-medium text-gray-500">Amount to Send</p>
+
                 <div class="mt-3 flex items-center justify-center gap-2">
-                  <p class="text-lg font-bold text-[#334155]">{{ formatCurrency(total) }}</p>
+                  <p class="text-lg font-bold text-[#334155]">
+                    {{ formatCurrency(total) }}
+                  </p>
+
                   <button
                     type="button"
                     class="text-[#4d7c85] hover:text-[#2f5963]"
@@ -317,15 +431,20 @@ function selectMethod(id) {
                 </div>
               </div>
 
+              <!-- Bank name -->
               <div class="bg-white px-6 py-5 text-center">
                 <p class="text-xs font-medium text-gray-500">Bank Name</p>
+
                 <p class="mt-3 text-sm font-bold text-[#315460]">78 FINANCE COMPANY LIMITED</p>
               </div>
 
+              <!-- Account number -->
               <div class="border-t border-gray-100 bg-white px-6 py-6 text-center">
                 <p class="text-xs font-medium text-gray-500">Account Number</p>
+
                 <div class="mt-3 flex items-center justify-center gap-2">
                   <p class="text-3xl font-semibold tracking-wider text-[#263d46]">7530093169</p>
+
                   <button
                     type="button"
                     class="text-[#4d7c85] hover:text-[#2f5963]"
@@ -336,14 +455,20 @@ function selectMethod(id) {
                 </div>
               </div>
 
+              <!-- Expiry -->
               <div class="bg-[#f8fafb] px-5 py-5 text-center">
                 <p class="text-sm font-medium leading-6 text-gray-600">
                   This account is going to expire in
-                  <span class="font-bold text-[#315460]">{{ formattedTime }}</span>
-                  make your payment before it expires
+
+                  <span class="font-bold text-[#315460]">
+                    {{ formattedTime }}
+                  </span>
+
+                  Make your payment before it expires.
                 </p>
               </div>
 
+              <!-- Confirmation -->
               <div class="bg-white px-4 pb-5">
                 <button
                   type="button"
@@ -355,13 +480,17 @@ function selectMethod(id) {
               </div>
             </div>
 
-            <!-- USSD -->
+            <!-- USSD child -->
             <div
-              v-else-if="selectedMethod === 'ussd'"
+              v-else-if="paymentView === 'ussd'"
               class="mt-7 rounded-xl border border-gray-200 p-6 text-center"
             >
-              <p class="text-sm text-gray-500">Dial the code below on your phone to pay</p>
+              <h3 class="text-lg font-bold text-gray-900">USSD payment</h3>
+
+              <p class="mt-3 text-sm text-gray-500">Dial the code below on your phone to pay.</p>
+
               <p class="mt-3 text-2xl font-bold tracking-wide text-[#315460]">*901*{{ total }}#</p>
+
               <button
                 type="button"
                 class="mt-6 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
@@ -371,31 +500,24 @@ function selectMethod(id) {
               </button>
             </div>
 
+            <!-- Change payment method -->
+            <button
+              v-if="paymentView !== 'methods'"
+              type="button"
+              class="mt-5 w-full rounded-xl border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+              @click="showPaymentMethods"
+            >
+              Change payment method
+            </button>
+
+            <!-- Back to details -->
             <button
               type="button"
               class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
-              @click="checkoutStep = 'details'"
+              @click="backToDetails"
             >
               Back to details
             </button>
-
-            <!-- <button
-              type="button"
-              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
-              @click="processPayment"
-            >
-              Pay {{ formatCurrency(total) }}
-            </button> -->
-
-
-
-            <!-- <button
-              type="button"
-              class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
-              @click="checkoutStep = 'details'"
-            >
-              Back to details
-            </button> -->
           </div>
 
           <!-- Processing -->
