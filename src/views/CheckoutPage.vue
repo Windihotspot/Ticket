@@ -92,6 +92,11 @@ function processPayment() {
 function goHome() {
   router.push('/')
 }
+
+function selectMethod(id) {
+  selectedMethod.value = id
+  if (id === 'transfer') startTransferTimer()
+}
 </script>
 
 <template>
@@ -214,7 +219,7 @@ function goHome() {
               <p class="mt-1 text-sm text-gray-500">Select your preferred payment method.</p>
             </div>
 
-            <div class="space-y-3">
+            <!-- <div class="space-y-3">
               <button
                 v-for="method in paymentMethods"
                 :key="method.id"
@@ -249,36 +254,59 @@ function goHome() {
                   ></span>
                 </span>
               </button>
+            </div> -->
+
+            <div class="space-y-3">
+              <button
+                v-for="method in paymentMethods"
+                :key="method.id"
+                type="button"
+                class="flex w-full items-center gap-4 rounded-xl border p-4 text-left transition"
+                :class="
+                  selectedMethod === method.id
+                    ? 'border-[#ff5a5f] bg-red-50 ring-2 ring-[#ff5a5f]/10'
+                    : 'border-gray-200 bg-white hover:border-gray-300'
+                "
+                @click="selectMethod(method.id)"
+              >
+                <span class="text-2xl">{{ method.icon }}</span>
+                <span class="font-semibold text-gray-800">{{ method.label }}</span>
+                <span
+                  class="ml-auto flex h-5 w-5 items-center justify-center rounded-full border"
+                  :class="
+                    selectedMethod === method.id
+                      ? 'border-[#ff5a5f] bg-[#ff5a5f]'
+                      : 'border-gray-300'
+                  "
+                >
+                  <span
+                    v-if="selectedMethod === method.id"
+                    class="h-2 w-2 rounded-full bg-white"
+                  ></span>
+                </span>
+              </button>
             </div>
 
-            <!-- <button
-              type="button"
-              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
-              @click="processPayment"
-            >
-              Pay {{ formatCurrency(total) }}
-            </button> -->
+            <!-- Card -->
+            <div v-if="selectedMethod === 'card'" class="mt-7">
+              <button
+                type="button"
+                class="w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
+                @click="processPayment"
+              >
+                Pay {{ formatCurrency(total) }}
+              </button>
+            </div>
 
-            <!--Payment Section per id-->
-            <button
-              v-if="selectedMethod !== 'transfer'"
-              type="button"
-              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
-              @click="processPayment"
+            <!-- Bank transfer -->
+            <div
+              v-else-if="selectedMethod === 'transfer'"
+              class="mt-7 overflow-hidden rounded-xl border border-[#d7e3e7]"
             >
-              Pay {{ formatCurrency(total) }}
-            </button>
-
-            <div v-else class="mt-7 overflow-hidden rounded-xl border border-[#d7e3e7]">
-              <!-- Amount -->
               <div class="bg-[#e8f2f4] px-6 py-6 text-center">
                 <p class="text-sm font-medium text-gray-500">Amount to Send</p>
-
                 <div class="mt-3 flex items-center justify-center gap-2">
-                  <p class="text-lg font-bold text-[#334155]">
-                    {{ formatCurrency(total) }}
-                  </p>
-
+                  <p class="text-lg font-bold text-[#334155]">{{ formatCurrency(total) }}</p>
                   <button
                     type="button"
                     class="text-[#4d7c85] hover:text-[#2f5963]"
@@ -289,20 +317,15 @@ function goHome() {
                 </div>
               </div>
 
-              <!-- Bank name -->
               <div class="bg-white px-6 py-5 text-center">
                 <p class="text-xs font-medium text-gray-500">Bank Name</p>
-
                 <p class="mt-3 text-sm font-bold text-[#315460]">78 FINANCE COMPANY LIMITED</p>
               </div>
 
-              <!-- Account number -->
               <div class="border-t border-gray-100 bg-white px-6 py-6 text-center">
                 <p class="text-xs font-medium text-gray-500">Account Number</p>
-
                 <div class="mt-3 flex items-center justify-center gap-2">
                   <p class="text-3xl font-semibold tracking-wider text-[#263d46]">7530093169</p>
-
                   <button
                     type="button"
                     class="text-[#4d7c85] hover:text-[#2f5963]"
@@ -313,20 +336,14 @@ function goHome() {
                 </div>
               </div>
 
-              <!-- Expiry -->
               <div class="bg-[#f8fafb] px-5 py-5 text-center">
                 <p class="text-sm font-medium leading-6 text-gray-600">
                   This account is going to expire in
-
-                  <span class="font-bold text-[#315460]">
-                    {{ formattedTime }}
-                  </span>
-
+                  <span class="font-bold text-[#315460]">{{ formattedTime }}</span>
                   make your payment before it expires
                 </p>
               </div>
 
-              <!-- Confirmation button -->
               <div class="bg-white px-4 pb-5">
                 <button
                   type="button"
@@ -338,6 +355,22 @@ function goHome() {
               </div>
             </div>
 
+            <!-- USSD -->
+            <div
+              v-else-if="selectedMethod === 'ussd'"
+              class="mt-7 rounded-xl border border-gray-200 p-6 text-center"
+            >
+              <p class="text-sm text-gray-500">Dial the code below on your phone to pay</p>
+              <p class="mt-3 text-2xl font-bold tracking-wide text-[#315460]">*901*{{ total }}#</p>
+              <button
+                type="button"
+                class="mt-6 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
+                @click="processPayment"
+              >
+                I've completed the USSD payment
+              </button>
+            </div>
+
             <button
               type="button"
               class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
@@ -345,6 +378,24 @@ function goHome() {
             >
               Back to details
             </button>
+
+            <!-- <button
+              type="button"
+              class="mt-7 w-full rounded-xl bg-[#ff5a5f] px-5 py-3.5 font-bold text-white transition hover:bg-[#e94b50]"
+              @click="processPayment"
+            >
+              Pay {{ formatCurrency(total) }}
+            </button> -->
+
+
+
+            <!-- <button
+              type="button"
+              class="mt-4 w-full py-2 text-sm font-semibold text-gray-500 hover:text-gray-900"
+              @click="checkoutStep = 'details'"
+            >
+              Back to details
+            </button> -->
           </div>
 
           <!-- Processing -->
