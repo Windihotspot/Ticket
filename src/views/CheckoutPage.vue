@@ -522,7 +522,7 @@ function goHome() {
           </div>
 
           <!-- Processing -->
-          <!-- <div v-else-if="checkoutStep === 'processing'" class="py-20 text-center">
+          <div v-else-if="checkoutStep === 'processing'" class="py-20 text-center">
             <div
               class="mx-auto h-14 w-14 animate-spin rounded-full border-4 border-gray-200 border-t-[#ff5a5f]"
             ></div>
@@ -530,10 +530,10 @@ function goHome() {
             <h2 class="mt-7 text-xl font-bold text-gray-900">Processing payment</h2>
 
             <p class="mt-2 text-sm text-gray-500">Please do not close this page.</p>
-          </div> -->
+          </div>
 
           <!-- Success -->
-          <!-- <div v-else-if="checkoutStep === 'success'" class="py-12 text-center">
+          <div v-else-if="checkoutStep === 'success'" class="py-12 text-center">
             <div
               class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-green-100 text-4xl font-bold text-green-600"
             >
@@ -562,7 +562,7 @@ function goHome() {
             >
               Done
             </button>
-          </div> -->
+          </div>
         </section>
 
         <!-- Order summary -->
