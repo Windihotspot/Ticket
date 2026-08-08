@@ -1,6 +1,7 @@
 <script setup>
 import { computed, reactive, ref } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
+import { RouterLink } from 'vue-router'
 
 const route = useRoute()
 const router = useRouter()
@@ -53,15 +54,12 @@ function backToDetails() {
   selectedMethod.value = ''
 }
 
-
-
 const cardDetails = ref({
   number: '',
   name: '',
   expiry: '',
   cvv: ''
 })
-
 
 const isCardValid = computed(() => {
   return (
@@ -117,12 +115,22 @@ function goToPayment() {
 }
 
 function processPayment() {
-  checkoutStep.value = 'paymentId'
+  checkoutStep.value = 'processing'
 
   setTimeout(() => {
     orderRef.value = 'TX-' + Math.random().toString(36).slice(2, 9).toUpperCase()
 
     checkoutStep.value = 'success'
+  }, 2200)
+}
+
+function cancelledPayment() {
+  checkoutStep.value = 'processing'
+
+  setTimeout(() => {
+    orderRef.value = 'TX-' + Math.random().toString(36).slice(2, 9).toUpperCase()
+
+    checkoutStep.value = 'cancelled'
   }, 2200)
 }
 
@@ -511,6 +519,16 @@ function goHome() {
               Change payment method
             </button>
 
+            <!--Return failed paymwnt-->
+            <button
+              v-if="paymentView !== 'methods'"
+              type="button"
+              class="mt-5 w-full rounded-xl border border-gray-300 bg-white px-5 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+              @click="cancelledPayment"
+            >
+              Cancel payment
+            </button>
+
             <!-- Back to details -->
             <button
               type="button"
@@ -562,6 +580,66 @@ function goHome() {
             >
               view ticket
             </button>
+          </div>
+
+          <!-- Payment cancelled -->
+          <div v-else-if="checkoutStep === 'cancelled'" class="py-12 text-center">
+            <!-- Cancelled icon -->
+            <div
+              class="mx-auto flex h-20 w-20 items-center justify-center rounded-full bg-red-50 text-4xl text-red-500 ring-8 ring-red-50/50"
+            >
+              ×
+            </div>
+
+            <!-- Heading -->
+            <h2 class="mt-6 text-2xl font-bold text-gray-900">Payment cancelled</h2>
+
+            <!-- Message -->
+            <p class="mx-auto mt-3 max-w-md text-gray-500">
+              Your payment wasn't completed, and no money was charged. Don't worry — your tickets
+              are still waiting for you.
+            </p>
+
+            <!-- Status card -->
+            <div
+              class="mx-auto mt-6 max-w-md rounded-2xl border border-gray-200 bg-gray-50 p-5 text-left"
+            >
+              <div class="flex items-center gap-3">
+                <div
+                  class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-white text-xl shadow-sm"
+                >
+                  💳
+                </div>
+
+                <div>
+                  <p class="text-sm font-semibold text-gray-800">Payment not completed</p>
+
+                  <p class="mt-1 text-xs text-gray-500">Your order has not been confirmed.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="mx-auto mt-8 flex max-w-md flex-col gap-3 sm:flex-row sm:justify-center">
+              <button
+                type="button"
+                class="rounded-xl bg-[#ff5a5f] px-7 py-3 font-bold text-white transition hover:bg-[#e94b50]"
+                @click="checkoutStep = 'payment'"
+              >
+                Try payment again
+              </button>
+              <RouterLink
+                to="/"
+                class="rounded-xl border border-gray-300 bg-white px-7 py-3 font-semibold text-gray-700 transition hover:bg-gray-50"
+              >
+                Go back
+              </RouterLink>
+            </div>
+
+            <!-- Small reassurance -->
+            <p class="mt-6 text-xs text-gray-400">
+              You can safely return and choose another payment method.
+            </p>
           </div>
         </section>
 
