@@ -327,7 +327,10 @@ async function processPayment() {
         body: JSON.stringify(payload)
       }
     )
-
+       console.log(
+      'Payment initiation response:',
+      response
+    )
     const result = await response.json()
 
     console.log(

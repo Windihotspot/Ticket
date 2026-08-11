@@ -11,7 +11,7 @@ export default defineConfig({
   },
   base: '/',
   server: {
-    port: 3001
+    port: 3004
   },
   plugins: [vue(), tailwindcss()],
   resolve: {
