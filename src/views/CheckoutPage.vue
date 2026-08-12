@@ -47,6 +47,7 @@ async function loadEvent() {
     }
 
     event.value = data
+    console.log('Failed to load event:', event.value)
   } catch (error) {
     console.error('Failed to load event:', error)
     eventError.value = 'Unable to load this event.'
