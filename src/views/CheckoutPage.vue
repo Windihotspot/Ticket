@@ -47,7 +47,7 @@ async function loadEvent() {
     }
 
     event.value = data
-    console.log('Failed to load event:', event.value)
+    console.log('Failed to load event:', event)
   } catch (error) {
     console.error('Failed to load event:', error)
     eventError.value = 'Unable to load this event.'
@@ -230,7 +230,7 @@ async function processPayment() {
     const returnUrl = `${window.location.origin}/checkout/${event.value.id}?payment_return=true`
 
     const payload = {
-      even_name: event.value.event_name,
+      event_name: event.value.event_name,
       event_id: event.value.id,
       customer_email: attendee.email.trim().toLowerCase(),
       customer_name: attendee.name.trim(),
