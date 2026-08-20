@@ -1,6 +1,16 @@
 <template>
   <div class="event-page">
-    <div v-if="eventLoading" class="state-msg">Loading event…</div>
+    <div
+  v-if="eventLoading"
+  class="position-fixed top-0 left-0 w-100 h-100 d-flex align-center justify-center"
+>
+  <v-progress-circular
+    indeterminate
+    color="primary"
+    size="50"
+    width="4"
+  />
+</div>
     <div v-else-if="eventError" class="state-msg error">{{ eventError }}</div>
 
     <template v-else-if="event">
